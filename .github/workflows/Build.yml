@@ -16,6 +16,14 @@ jobs:
         git clone --depth=1 -b KernelSU https://github.com/Ridhoardhiansyah7/realme_C11-2021_Narzo-50i-AndroidR-kernel-source kernel_source
         ls -l kernel_source
 
+    - name: Download KernelSU as normal folder
+      run: |
+        git clone --depth=1 https://github.com/KernelSU/KernelSU.git temp_ksu
+        mkdir -p kernel_source/drivers/kernelsu
+        cp -r temp_ksu/drivers/* kernel_source/drivers/kernelsu/
+        rm -rf temp_ksu
+        echo "KernelSU injected"
+
     - name: Install Dependencies
       run: |
         sudo apt update
