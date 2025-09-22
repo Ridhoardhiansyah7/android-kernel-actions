@@ -1,34 +1,51 @@
-name: Build on Tag
+name: Build Android Kernel
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-kernel:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout kernel source
-      uses: actions/checkout@v2
+    - name: Clone Kernel Source
+      uses: actions/checkout@v3
 
-    - name: Checkout zipper
-      uses: actions/checkout@v2
-      with:
-        repository: lemniskett/AnyKernel3
-        path: zipper
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache wget git python3
 
-    - name: Android kernel build
-      uses: lemniskett/android-kernel-actions@master
-      id: build
-      env:
-        NAME: touchGrassKernel-ksu
-      with:
-        arch: arm64
-        compiler: gcc/10
-        defconfig: a13ve_defconfig
-        image: Image.gz-dtb
+    - name: Setup AOSP Clang
+      run: |
+        mkdir clang && cd clang
+        wget https://github.com/ClangBuiltLinux/clang-releases/releases/download/clang-r450784d/clang-r450784d.tar.gz
+        tar -xf clang-r450784d.tar.gz
+        echo "CLANG_PATH=$(pwd)/clang-r450784d/bin" >> $GITHUB_ENV
 
-    - name: Release build
-      uses: ncipollo/release-action@v1
+    - name: Make Output Directory
+      run: mkdir -p out
+
+    - name: Generate Defconfig
+      run: |
+        make O=out ARCH=arm64 sprd_sharkl3_defconfig
+
+    - name: Build Kernel
+      run: |
+        PATH=${{ env.CLANG_PATH }}:$PATH \
+        make -j$(nproc) \
+          O=out \
+          ARCH=arm64 \
+          CC=clang \
+          CROSS_COMPILE=aarch64-linux-gnu- \
+          LLVM=1 \
+          LLVM_IAS=1
+
+    - name: Upload Kernel Image
+      uses: actions/upload-artifact@v3
       with:
-        artifacts: ${{ steps.build.outputs.outfile }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Image.gz-dtb
+        path: out/arch/arm64/boot/Image.gz-dtb
