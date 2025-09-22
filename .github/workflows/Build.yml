@@ -17,13 +17,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache wget git python3
-
-    - name: Setup LLVM Clang 17.0.7
-      run: |
-        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.7/clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04.tar.xz
-        tar -xf clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04.tar.xz
-        echo "CLANG_PATH=$(pwd)/clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04/bin" >> $GITHUB_ENV
+        sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache wget git python3 clang
 
     - name: Make Output Directory
       run: mkdir -p out
@@ -34,7 +28,6 @@ jobs:
 
     - name: Build Kernel
       run: |
-        PATH=${{ env.CLANG_PATH }}:$PATH \
         make -j$(nproc) \
           O=out \
           ARCH=arm64 \
