@@ -19,12 +19,11 @@ jobs:
         sudo apt update
         sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache wget git python3
 
-    - name: Setup AOSP Clang
+    - name: Setup LLVM Clang 17.0.7
       run: |
-        mkdir clang && cd clang
-        wget https://github.com/ClangBuiltLinux/clang-releases/releases/download/clang-r450784d/clang-r450784d.tar.gz
-        tar -xf clang-r450784d.tar.gz
-        echo "CLANG_PATH=$(pwd)/clang-r450784d/bin" >> $GITHUB_ENV
+        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.7/clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+        tar -xf clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+        echo "CLANG_PATH=$(pwd)/clang+llvm-17.0.7-x86_64-linux-gnu-ubuntu-20.04/bin" >> $GITHUB_ENV
 
     - name: Make Output Directory
       run: mkdir -p out
