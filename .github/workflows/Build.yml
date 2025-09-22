@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Clone Kernel Source from branch
+    - name: Clone Kernel Source
       run: |
         git clone --depth=1 -b KernelSU https://github.com/Ridhoardhiansyah7/realme_C11-2021_Narzo-50i-AndroidR-kernel-source
         ls -l kernel_source
@@ -19,9 +19,9 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache wget git python3 clang
+        sudo apt install -y build-essential bc bison flex libssl-dev libelf-dev ccache clang python3
 
-    - name: Make Output Directory
+    - name: Prepare Output Directory
       run: mkdir -p out
 
     - name: Generate Defconfig
@@ -30,10 +30,7 @@ jobs:
 
     - name: Build Kernel
       run: |
-        make -j$(nproc) \
-          O=out \
-          ARCH=arm64 \
-          -C kernel_source \
+        make -j$(nproc) O=out ARCH=arm64 -C kernel_source \
           CC=clang \
           CROSS_COMPILE=aarch64-linux-gnu- \
           LLVM=1 \
