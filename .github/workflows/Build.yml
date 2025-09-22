@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Clone Kernel Source
       run: |
-        git clone --depth=1 -b KernelSU https://github.com/Ridhoardhiansyah7/realme_C11-2021_Narzo-50i-AndroidR-kernel-source
+        git clone --depth=1 -b KernelSU https://github.com/Ridhoardhiansyah7/realme_C11-2021_Narzo-50i-AndroidR-kernel-source kernel_source
         ls -l kernel_source
 
     - name: Install Dependencies
