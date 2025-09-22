@@ -12,7 +12,8 @@ jobs:
 
     steps:
     - name: Clone Kernel Source
-      uses: actions/checkout@v3
+      run: |
+        git clone --depth=1 -b KernelSU https://github.com/Ridhoardhiansyah7/realme_C11-2021_Narzo-50i-AndroidR-kernel-source
 
     - name: Install Dependencies
       run: |
@@ -24,13 +25,14 @@ jobs:
 
     - name: Generate Defconfig
       run: |
-        make O=out ARCH=arm64 sprd_sharkl3_defconfig
+        make O=out ARCH=arm64 -C kernel_source sprd_sharkl3_defconfig
 
     - name: Build Kernel
       run: |
         make -j$(nproc) \
           O=out \
           ARCH=arm64 \
+          -C kernel_source \
           CC=clang \
           CROSS_COMPILE=aarch64-linux-gnu- \
           LLVM=1 \
